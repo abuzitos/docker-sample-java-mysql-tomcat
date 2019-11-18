@@ -1,0 +1,44 @@
+version: '3'
+services:
+  db:
+    image: mysql:5.7
+    container_name: mysql
+    volumes:
+      - my-db:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: mysenha
+      MYSQL_DATABASE: javatest
+      MYSQL_USER: root
+      MYSQL_PASSWORD: mysenha
+    ports:
+      - "3306:3306"
+    expose:
+      - '3306'
+
+  web:
+    image: tomcat
+    volumes:
+      - ./dbtest:/usr/local/tomcat/webapps/dbtest
+    ports:
+      - "8080:8080"
+    environment:
+      DATABASE__CLIENT: db
+      DATABASE__CONNECTION__HOST: db
+      DATABASE__CONNECTION__USER: root
+      DATABASE__CONNECTION__DATABASE: javatest
+      DATABASE__CONNECTION__PASSWORD: mysenha
+    depends_on:
+      - db
+
+  dbinit:
+    image: mysql:5.7
+    entrypoint: /bin/bash
+    volumes:
+      - my-db:/var/lib/mysql
+      - ./cargadb:/cargadb
+    command: -c "sleep 10; mysql -u root --password=mysenha -h mysql javatest < ./cargadb/init.sql; exit 0;"
+    depends_on:
+      - db
+
+volumes:
+  my-db:
