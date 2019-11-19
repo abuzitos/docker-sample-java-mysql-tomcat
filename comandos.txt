@@ -1,3 +1,8 @@
 Github original
 
 https://github.com/ehazlett/docker-sample-java-mysql-tomcat
+
+
+git add .
+git commit -m "app completa"
+git push -u origin master
