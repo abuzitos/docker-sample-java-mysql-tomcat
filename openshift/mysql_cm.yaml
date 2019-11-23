@@ -1,7 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: mysql-cargadb-cm
-  namespace: y-java-tomcat-mysql
-data:
-  init-file: https://github.com/abuzitos/docker-sample-java-mysql-tomcat/blob/master/cargadb/init.sql

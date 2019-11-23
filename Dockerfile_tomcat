@@ -1,3 +1,0 @@
-FROM tomcat
-COPY dbtest /usr/local/tomcat/webapps/dbtest
-EXPOSE 8080
