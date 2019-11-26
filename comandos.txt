@@ -8,7 +8,7 @@ git commit -m "app completa"
 git push -u origin master
 
 
-oc new-project j-m-t22
+oc new-project j-m-t-final
 
 oc new-app mysql MYSQL_ROOT_PASSWORD=mysenha
 POD=`oc get pods -l app=mysql | grep Running | grep 1/1 | awk '{print $1}'`
@@ -17,22 +17,12 @@ oc exec $POD -- bash -c "mysql --user=root < /tmp/init.sql"
 
 oc new-app tomcat:7
 POD=`oc get pods -l app=tomcat | grep Running | grep 1/1 | awk '{print $1}'`
-oc set volume dc/tomcat --add --overwrite --name=v1 --mount-path=/usr/local/tomcat/webapps/my
+oc set volume dc/tomcat --add --name=v1 --mount-path=/usr/local/tomcat/webapps
 POD=`oc get pods -l app=tomcat | grep Running | grep 1/1 | awk '{print $1}'`
-
-oc cp dbtest/index.jsp $POD:/usr/local/tomcat/webapps/my
-oc cp dbtest/META-INF/ $POD:/usr/local/tomcat/webapps/my
-oc cp dbtest/WEB-INF/ $POD:/usr/local/tomcat/webapps/my
-
-oc cp dbtest $POD:/usr/local/tomcat/webapps/my/dbtest
-
-
-
+oc cp dbtest $POD:/usr/local/tomcat/webapps
 oc expose svc/tomcat
 
 
-oc new-app tomcat:7 -p DATABASE__CONNECTION__USER=root DATABASE__CONNECTION__DATABASE=javatest DATABASE__CONNECTION__PASSWORD=mysenha
-oc delete svc/tomcat
-oc expose pod/$POD --name=tomcat
-oc exec -it $POD /bin/bash
-oc set volume pod/$POD --all
+1) Comando de execução do Ansible / playbook
+
+ansible-playbook -c local -i hosts main.yml --ask-become-pass

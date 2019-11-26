@@ -1,0 +1,24 @@
+---
+- hosts: webserver
+  become: yes
+  become_method: sudo
+  connection: local
+  tasks:
+  - name: Configura o Diretorio de Trabalho
+    shell: cd "$PWD"/docker
+
+  - name: Build Docker image from Dockerfile
+    docker_container:
+       image: abu/exemploansible:v1
+       name: exemploansible
+       state: present
+               
+  - name: Running the container
+    docker_container:
+       image: abu/exemploansible:v1
+       name: exemploansible
+       ports: "80:80"
+       state: started
+
+  - name: Check if container is running
+    shell: docker ps

@@ -1,0 +1,32 @@
+---
+- hosts: webserver
+  connection: local
+
+  tasks:
+  - name: Criar Projeto
+    shell: oc new-project j-m-t-final
+
+  - name: Criando Banco de Dados
+    shell: |
+       oc new-app mysql MYSQL_ROOT_PASSWORD=mysenha
+       sleep 60;
+       POD=`oc get pods -l app=mysql | grep Running | grep 1/1 | awk '{print $1}'`
+       slepp 60;
+       oc cp ./cargadb/init.sql $POD:/tmp
+       slepp 60;
+       oc exec $POD -- bash -c "mysql --user=root < /tmp/init.sql"
+
+  - name: Criando servidor de Aplicação Tomcat
+    shell: |
+      oc new-app tomcat:7
+      sleep 60;
+      POD=`oc get pods -l app=tomcat | grep Running | grep 1/1 | awk '{print $1}'`
+      oc set volume dc/tomcat --add --name=v1 --mount-path=/usr/local/tomcat/webapps
+      sleep 60;
+      POD=`oc get pods -l app=tomcat | grep Running | grep 1/1 | awk '{print $1}'`
+      oc cp dbtest $POD:/usr/local/tomcat/webapps
+      sleep 60;
+      oc expose svc/tomcat
+
+  - name: Fim da Implantação
+    shell: echo "<<< Fim >>>"
